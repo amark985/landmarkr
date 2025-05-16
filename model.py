@@ -21,13 +21,13 @@ class Landmark(db.Model):
     __tablename__ = 'landmarks'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, nullable=False, unique=True)
+    name = db.Column(db.String, nullable=False)
     description = db.Column(db.Text)
     type = db.Column(db.String)  # 'natural' or 'manmade'
     state = db.Column(db.String)
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
-    image_url = db.Column(db.String)
+    image_url = db.Column(db.String, nullable=True)
     category_id = db.Column(db.Integer, db.ForeignKey("landmark_categories.id"), nullable=False)
 
     category = relationship('LandmarkCategory', backref='landmarks')

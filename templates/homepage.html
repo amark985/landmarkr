@@ -122,7 +122,8 @@
               ${place.state}<br>
               Type: ${place.type}<br>
               ${place.description ? `<em>${place.description}</em><br>` : ''}
-              ${place.image_url ? `<img src="${place.image_url}" width="100">` : ''}<br>
+              <img src="${place.image_url || '/static/images/placeholder.jpg'}" width="100"
+                   onerror="this.onerror=null; this.src='/static/images/placeholder.jpg';"><br>
               {% if session.get('user_id') %}
                 <button onclick="saveLandmark('${place.id}')">Save Landmark</button>
               {% endif %}

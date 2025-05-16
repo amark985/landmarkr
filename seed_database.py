@@ -9,7 +9,7 @@ from crud import create_landmark_category
 with open("data/landmark_states.json", "r", encoding="utf-8") as f:
     name_to_state = json.load(f)
 
-def load_landmarks_from_csv(filepath, category_id):
+def load_landmarks_from_csv(filepath, category_id, use_name_to_state=False):
     """Load landmarks from a CSV and return Landmark objects."""
     landmarks = []
     with open(filepath, newline='', encoding="utf-8") as csvfile:
@@ -20,20 +20,25 @@ def load_landmarks_from_csv(filepath, category_id):
 
         for row in reader:
              # Strip whitespace from each key in the row
-            row = {k.strip(): v for k, v in row.items()}
+            row = {k.strip().lower(): v for k, v in row.items()}
             
             try:
                 name = row["name"]
                 lat = float(row["latitude"])
                 lon = float(row["longitude"])
-                state = name_to_state.get(name)
+                state = row.get("state")
 
-                if not state:
+                if not state or state.strip() == "":
                     print(f"Skipping row with missing state: {row}")
                     continue
                 
                 # Skip duplicates
-                existing = Landmark.query.filter_by(name=name).first()
+                existing = Landmark.query.filter_by(
+                    name=name,
+                    state=state,
+                    latitude=lat,
+                    longitude=lon
+                    ).first()
                 if existing:
                     print(f"Skipping duplicate landmark: {name}")
                     continue
@@ -51,6 +56,8 @@ def load_landmarks_from_csv(filepath, category_id):
                 landmarks.append(landmark)
             except Exception as e:
                 print(f"Skipping row due to error: {e}")
+                print(f"Row data: {row}")
+
     return landmarks
 
 def seed():
@@ -75,8 +82,10 @@ def seed():
             all_landmarks = []
 
             # Load and insert landmarks
-            all_landmarks.extend(load_landmarks_from_csv("data/natural_landmarks.csv", natural.id))
-            all_landmarks.extend(load_landmarks_from_csv("data/manmade_landmarks.csv", manmade.id))
+            # Use name_to_state mapping only for natural landmarks
+            all_landmarks.extend(load_landmarks_from_csv("data/natural_landmarks.csv", natural.id, use_name_to_state=True))
+            # For manmade landmarks, just use the CSV 'state' column directly
+            all_landmarks.extend(load_landmarks_from_csv("data/manmade_landmarks.csv", manmade.id, use_name_to_state=False))
 
             db.session.add_all(all_landmarks)
             db.session.commit()
