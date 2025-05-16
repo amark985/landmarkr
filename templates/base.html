@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Landmarkr</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Add your CSS here -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <header>
+        <h1><a href="/">Landmarkr</a></h1>
+        <!-- Navigation bar -->
+        <nav>
+            <a href="/">Home</a>
+            {% if session.get("user_id") %}
+                <a href="/landmarks">My Landmarks</a>
+                <a href="/logout">Logout</a>
+            {% else %}
+                <a href="/login">Login</a>
+                <a href="/signup">Sign Up</a>
+            {% endif %}
+        </nav>
+    </header>
+    
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    
+    <footer>
+        <p>&copy; 2025 Landmarkr. All rights reserved.</p>
+    </footer>
+    
+    {% block scripts %}{% endblock %}
+
+</body>
+</html>

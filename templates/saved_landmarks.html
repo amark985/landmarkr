@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>My Saved Landmarks</h2>
+  
+  {% if saved_landmarks %}
+    <ul>
+      {% for landmark in saved_landmarks %}
+        <li>
+          <strong>{{ landmark.name }}</strong><br>
+          {{ landmark.state }}<br>
+          Type: {{ landmark.type }}<br>
+          {% if landmark.description %}
+            <em>{{ landmark.description }}</em><br>
+          {% endif %}
+          {% if landmark.image_url %}
+            <img src="{{ landmark.image_url }}" width="100"><br>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>You have no saved landmarks.</p>
+  {% endif %}
+  
+{% endblock %}
+
+{% block scripts %}{% endblock %}
