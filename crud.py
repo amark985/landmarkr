@@ -75,13 +75,19 @@ def get_landmarks_by_filters(filters):
 # ------------------------------
 
 def save_landmark_for_user(user_id, landmark_id):
+    existing = SavedLandmark.query.filter_by(user_id=user_id, landmark_id=landmark_id).first()
+    if existing:
+        return existing # Already saved, no need to add again
+    
     saved = SavedLandmark(user_id=user_id, landmark_id=landmark_id)
     db.session.add(saved)
     db.session.commit()
     return saved
+    
 
 def get_user_saved_landmarks(user_id):
-    return Landmark.query.join(SavedLandmark).filter(SavedLandmark.user_id == user_id).all()
+    saved = SavedLandmark.query.filter_by(user_id=user_id).all()
+    return [entry.landmark for entry in saved]
 
 def delete_saved_landmark(saved_id):
     saved = SavedLandmark.query.get(saved_id)

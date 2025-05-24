@@ -1,0 +1,89 @@
+/* === Base Page Styling === */
+body {
+  background-color: #fdfaf6; /* warm sand background */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #2d2d2d;
+  margin: 0;
+  padding: 0;
+}
+
+/* === Header & Navigation === */
+header {
+  background-color: #017b8b; /* ocean blue */
+  color: #ffffff;
+  padding: 1rem;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+header h1 {
+  margin: 0;
+  font-size: 2.2rem;
+  font-weight: bold;
+}
+
+header a {
+  color: #ffffff;
+  text-decoration: none;
+  margin: 0 14px;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+header a:hover {
+  color: #ffe0b2; /* soft sand highlight */
+}
+
+/* === Main Content Area === */
+main {
+  padding: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* === Landmark Cards === */
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  background-color: #fef4e8; /* postcard beige */
+  margin-bottom: 1.2rem;
+  padding: 1rem;
+  border-radius: 12px;
+  border-left: 5px solid #ff9248; /* travel-orange highlight */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+li img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+  margin-top: 0.5rem;
+}
+
+/* === Buttons === */
+button,
+.save-btn {
+  background-color: #ff9248; /* sunset orange */
+  color: #ffffff;
+  padding: 0.5rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+button:hover,
+.save-btn:hover {
+  background-color: #e6782e; /* deeper sunset */
+}
+
+/* === Footer === */
+footer {
+  text-align: center;
+  padding: 1rem;
+  background-color: #017b8b;
+  color: #

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block head %}
+    <title>{{ landmark.name }} - Landmark Details</title>
+{% endblock %}
+
+{% block content %}
+    <h1>{{ landmark.name }}</h1>
+    <p><strong>Type:</strong> {{ landmark.type }}</p>
+    <p><strong>State:</strong> {{ landmark.state }}</p>
+    <p><strong>Description:</strong> {{ landmark.description }}</p>
+
+    {% if landmark.image_url %}
+        <img src="{{ landmark.image_url }}" alt="{{ landmark.name }}" width="400">
+    {% endif %}
+
+    {% if wikipedia_url %}
+        <p>
+            <a href="{{ wikipedia_url }}" target="_blank">View full article on Wikipedia</a>
+        </p>
+
+        <details>
+            <summary>Show embedded Wikipedia page</summary>
+            <iframe src="{{ wikipedia_url }}" width="100%" height="600" style="border:1px solid #ccc;"></iframe>
+        </details>
+    {% endif %}
+
+    <p><a href="/">Back to Map</a> | <a href="/my_landmarks">Back to My Saved Landmarks</a></p>
+{% endblock %}
+
+{% block scripts %}{% endblock %}

@@ -17,11 +17,11 @@
         <nav>
             <a href="/">Home</a>
             {% if session.get("user_id") %}
-                <a href="/landmarks">My Landmarks</a>
+                <a href="/my_landmarks">My Landmarks</a>
                 <a href="/logout">Logout</a>
             {% else %}
-                <a href="/login">Login</a>
-                <a href="/signup">Sign Up</a>
+                <a href="/#login-section">Login</a>
+                <a href="/#login-section">Sign Up</a>
             {% endif %}
         </nav>
     </header>

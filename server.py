@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, session, jsonify
 from model import connect_to_db, db
+from api.wikipedia_api import fetch_wiki_data
 import crud
 from werkzeug.security import check_password_hash, generate_password_hash
 from env.config import GOOGLE_MAPS_API_KEY, FLASK_SECRET_KEY
@@ -45,6 +46,12 @@ def homepage():
     # If it's a GET request, render the homepage with login/signup form
     return render_template("homepage.html", GOOGLE_MAPS_API_KEY=GOOGLE_MAPS_API_KEY)
 
+# Route to logout users.
+@app.route('/logout', methods=['GET', 'POST'])
+def logout():
+    session.pop('user_id', None)
+    return redirect('/')
+
 @app.route("/api/landmarks")
 def get_landmarks():
     name = request.args.get("name")
@@ -74,14 +81,38 @@ def save_landmark():
     landmark_id = request.form.get("landmark_id")
     
     if not user_id:
-        return redirect("/")  # Redirect to the homepage if the user is not logged in
+        return jsonify({'error': 'Unauthorized'}), 401
     
     if not landmark_id:
-        return "Missing landmark ID", 400
+        return jsonify({'error': 'No landmark id provided'}), 400
 
     crud.save_landmark_for_user(user_id, landmark_id)
-    return render_template("saved_landmarks.html")
-    #return redirect("/")  # Redirect to the homepage after saving the landmark
+    return jsonify({'message': 'Landmark saved!'}), 200
+
+@app.route("/my_landmarks")
+def my_landmarks():
+    user_id = session.get("user_id")
+
+    if not user_id:
+        return redirect("/")
+
+    saved_landmarks = crud.get_user_saved_landmarks(user_id)
+
+    return render_template("saved_landmarks.html", saved_landmarks=saved_landmarks)
+
+@app.route("/landmark/<int:landmark_id>")
+def landmark_detail(landmark_id):
+    landmark = crud.get_landmark_by_id(landmark_id)
+
+    if not landmark:
+        return "Landmark not found", 404
+
+    wikipedia_url = f"https://en.wikipedia.org/wiki/{landmark.name.replace(' ', '_')}"
+  
+    user_id = session.get("user_id")
+
+    return render_template("landmark_detail.html", landmark=landmark, user_id=user_id, wikipedia_url=wikipedia_url)
+
 
 if __name__ == "__main__":
     app.run(debug=True)

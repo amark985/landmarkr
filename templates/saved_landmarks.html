@@ -7,7 +7,9 @@
     <ul>
       {% for landmark in saved_landmarks %}
         <li>
-          <strong>{{ landmark.name }}</strong><br>
+          <a href="{{ url_for('landmark_detail', landmark_id=landmark.id) }}">
+            <strong>{{ landmark.name }}</strong>
+          </a><br>
           {{ landmark.state }}<br>
           Type: {{ landmark.type }}<br>
           {% if landmark.description %}
@@ -23,6 +25,7 @@
     <p>You have no saved landmarks.</p>
   {% endif %}
   
+  <p><a href="/">Back to Map</a></p>
 {% endblock %}
 
 {% block scripts %}{% endblock %}
