@@ -113,6 +113,21 @@ def landmark_detail(landmark_id):
 
     return render_template("landmark_detail.html", landmark=landmark, user_id=user_id, wikipedia_url=wikipedia_url)
 
+# Route to unsave landmarks for logged-in users
+@app.route("/unsave", methods=["POST"])
+def unsave_landmark():
+    user_id = session.get("user_id")
+    landmark_id = request.form.get("landmark_id")
+
+    if not user_id or not landmark_id:
+        return jsonify({'error': 'Invalid request'}), 400
+
+    success = crud.unsave_landmark_for_user(user_id, landmark_id)
+    if success:
+        return jsonify({'message': 'Landmark removed!'})
+    else:
+        return jsonify({'error': 'Landmark not found'}), 404
+
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -6,7 +6,7 @@
   {% if saved_landmarks %}
     <ul>
       {% for landmark in saved_landmarks %}
-        <li>
+        <li data-landmark-id="{{ landmark.id }}">
           <a href="{{ url_for('landmark_detail', landmark_id=landmark.id) }}">
             <strong>{{ landmark.name }}</strong>
           </a><br>
@@ -18,6 +18,8 @@
           {% if landmark.image_url %}
             <img src="{{ landmark.image_url }}" width="100"><br>
           {% endif %}
+
+          <button class="remove-btn" data-id="{{ landmark.id }}"></button>Remove</button>
         </li>
       {% endfor %}
     </ul>
@@ -26,6 +28,48 @@
   {% endif %}
   
   <p><a href="/">Back to Map</a></p>
+
+  <!-- Confirmation Message -->
+   <div id="message" style="color: green; font-weight: bold; display: none; margin-top: 10px;"></div>
 {% endblock %}
 
-{% block scripts %}{% endblock %}
+{% block scripts %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const messageDiv = document.getElementById("message");
+
+    document.querySelectorAll(".remove-btn").forEach(button => {
+      button.addEventListener("click", function () {
+        const landmarkId = this.dataset.id;
+
+        if (confirm("Are you sure you want to remove this landmark?")) {
+          fetch("/unsave", {
+            method: "POST",
+            headers: {
+              "Content-type": "application/x-www-form-urlencoded"
+            },
+            body: `landmark_id=${landmarkId}`
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.message) {
+              //Remove the landmark from the list
+              const li = this.closest("li");
+              li.remove();
+
+              //Show confirmation message
+              messageDiv.textContent = "Landmark removed!";
+              messageDiv.style.display = "block";
+
+              //Hide the message after 2 seconds
+              setTimeout(() => {
+                messageDiv.style.display = "none";
+              }, 2000);
+            }
+          })
+        }
+      });
+    });
+  });
+</script>
+{% endblock %}

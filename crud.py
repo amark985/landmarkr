@@ -1,8 +1,6 @@
 from model import db, User, Landmark, SavedLandmark, LandmarkCategory
 
-# -------------------
-# User CRUD Functions
-# -------------------
+"""User CRUD Functions"""
 
 def create_user(email, password_hash):
     user = User(email=email, password_hash=password_hash)
@@ -17,9 +15,8 @@ def get_user_by_id(user_id):
     return User.query.get(user_id)
 
 
-# -----------------------
-# Landmark CRUD Functions
-# -----------------------
+"""Landmark CRUD Functions"""
+
 
 def create_landmark(name, description, type, state, latitude, longitude, image_url, category_id=None):
     existing = Landmark.query.filter_by(name=name).first()
@@ -70,9 +67,8 @@ def get_landmarks_by_filters(filters):
     return query.all()
 
 
-# ------------------------------
-# Saved Landmark CRUD Functions
-# ------------------------------
+"""Saved Landmark CRUD Functions"""
+
 
 def save_landmark_for_user(user_id, landmark_id):
     existing = SavedLandmark.query.filter_by(user_id=user_id, landmark_id=landmark_id).first()
@@ -84,13 +80,12 @@ def save_landmark_for_user(user_id, landmark_id):
     db.session.commit()
     return saved
     
-
 def get_user_saved_landmarks(user_id):
     saved = SavedLandmark.query.filter_by(user_id=user_id).all()
     return [entry.landmark for entry in saved]
 
-def delete_saved_landmark(saved_id):
-    saved = SavedLandmark.query.get(saved_id)
+def unsave_landmark_for_user(user_id, landmark_id):
+    saved = SavedLandmark.query.filter_by(user_id=user_id, landmark_id=landmark_id).first()
     if saved:
         db.session.delete(saved)
         db.session.commit()
@@ -98,9 +93,7 @@ def delete_saved_landmark(saved_id):
     return False
 
 
-# -------------------------------
-# Landmark Category CRUD Functions
-# -------------------------------
+"""Landmark Category CRUD Functions"""
 
 def create_landmark_category(name):
     category = LandmarkCategory(name=name)
