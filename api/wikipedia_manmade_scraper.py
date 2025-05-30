@@ -9,7 +9,7 @@ MAIN_URL = "https://en.wikipedia.org/wiki/List_of_U.S._National_Historic_Landmar
 WIKI_API_URL = "https://en.wikipedia.org/api/rest_v1/page/summary/"
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
-OUTPUT_FILE = os.path.join(DATA_DIR, "test_manmade_landmarks.csv")
+OUTPUT_FILE = os.path.join(DATA_DIR, "manmade_landmarks_with_descriptions.csv")
 
 
 def get_state_links():

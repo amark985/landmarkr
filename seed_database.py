@@ -85,7 +85,7 @@ def seed():
             # Use name_to_state mapping only for natural landmarks
             all_landmarks.extend(load_landmarks_from_csv("data/natural_landmarks.csv", natural.id, use_name_to_state=True))
             # For manmade landmarks, just use the CSV 'state' column directly
-            all_landmarks.extend(load_landmarks_from_csv("data/test_manmade_landmarks.csv", manmade.id, use_name_to_state=False))
+            all_landmarks.extend(load_landmarks_from_csv("data/manmade_landmarks_with_descriptions.csv", manmade.id, use_name_to_state=False))
 
             db.session.add_all(all_landmarks)
             db.session.commit()
