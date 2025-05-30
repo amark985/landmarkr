@@ -59,10 +59,10 @@ def get_landmarks_by_filters(filters):
         query = query.filter(Landmark.name.ilike(f"%{filters['name']}%"))
 
     if "state" in filters:
-        query = query.filter_by(state=filters["state"])
+        query = query.filter(Landmark.state.ilike(filters["state"]))
 
     if "type" in filters:
-        query = query.filter_by(type=filters["type"])
+        query = query.filter(Landmark.type.ilike(filters["type"]))
 
     return query.all()
 
