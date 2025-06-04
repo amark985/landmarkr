@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, session, jsonify
-from model import connect_to_db, db
+from model import connect_to_db, db, SavedLandmark
 from api.wikipedia_api import fetch_wiki_data
 import crud
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -80,14 +80,15 @@ def save_landmark():
     user_id = session.get("user_id")
     landmark_id = request.form.get("landmark_id")
     
-    if not user_id:
-        return jsonify({'error': 'Unauthorized'}), 401
+    if not user_id or not landmark_id:
+        return jsonify({"success": False, "message": "Unauthorized or missing data"}), 400
     
-    if not landmark_id:
-        return jsonify({'error': 'No landmark id provided'}), 400
+    existing = crud.save_landmark_for_user(user_id, landmark_id)
 
-    crud.save_landmark_for_user(user_id, landmark_id)
-    return jsonify({'message': 'Landmark saved!'}), 200
+    if isinstance(existing, SavedLandmark):
+        return jsonify({'success': True, 'message': 'Landmark saved!'}), 200
+    else:
+        return jsonify({'success': False, 'message': 'Landmark already saved'}), 200
 
 @app.route("/my_landmarks")
 def my_landmarks():

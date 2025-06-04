@@ -17,7 +17,6 @@ def get_user_by_id(user_id):
 
 """Landmark CRUD Functions"""
 
-
 def create_landmark(name, description, type, state, latitude, longitude, image_url, category_id=None):
     existing = Landmark.query.filter_by(name=name).first()
     if existing:
@@ -68,7 +67,6 @@ def get_landmarks_by_filters(filters):
 
 
 """Saved Landmark CRUD Functions"""
-
 
 def save_landmark_for_user(user_id, landmark_id):
     existing = SavedLandmark.query.filter_by(user_id=user_id, landmark_id=landmark_id).first()

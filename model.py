@@ -39,7 +39,12 @@ class Landmark(db.Model):
     def to_dict(self, user_id=None):
         saved = False
         if user_id:
-            saved = any(saved.user_id == user_id for saved in self.saved_by_users)
+            saved = db.session.query(
+                db.exists().where(
+                    (SavedLandmark.user_id == user_id) & 
+                    (SavedLandmark.landmark_id == self.id)
+                )
+            ).scalar()
 
         return {
             "id": self.id,
