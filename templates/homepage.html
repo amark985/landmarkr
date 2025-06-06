@@ -5,7 +5,7 @@
   <div style="margin-bottom: 1.5rem; padding: 1rem; background-color: #f0f8ff; border-radius: 10px; text-align: center;">
     <h2>Welcome!</h2>
     <p style="font-size: 1.1rem;">
-      Explore iconic landmarks across the U.S. — from breathtaking natural wonders to historic manmade marvels. 
+      Explore iconic landmarks across the U.S. — from breathtaking natural wonders to historic manmade marvels, to include the U.S. Virgin Islands and the District of Columbia (Washington, D.C.). 
       <strong>Log in</strong> to save your favorites and build your personal travel wishlist!
     </p>
   </div>
@@ -18,14 +18,13 @@
       <option value="Alaska">Alaska</option>
       <option value="Arizona">Arizona</option>
       <option value="Arkansas">Arkansas</option>
-      <option value="Boston">Boston</option>
       <option value="California">California</option>
       <option value="Colorado">Colorado</option>
       <option value="Connecticut">Connecticut</option>
       <option value="Delaware">Delaware</option>
       <option value="the District of Columbia">District of Columbia</option>
       <option value="Florida">Florida</option>
-      <option value="Georgia (U.S. state)">Georgia</option>
+      <option value="Georgia">Georgia</option>
       <option value="Hawaii">Hawaii</option>
       <option value="Idaho">Idaho</option>
       <option value="Illinois">Illinois</option>
@@ -65,7 +64,6 @@
       <option value="Vermont">Vermont</option>
       <option value="Virginia">Virginia</option>
       <option value="Washington">Washington</option>
-      <option value="Washington, D.C.">Washington, D.C.</option>
       <option value="West Virginia">West Virginia</option>
       <option value="Wisconsin">Wisconsin</option>
       <option value="Wyoming">Wyoming</option>
@@ -84,8 +82,17 @@
     No landmarks found for the selected filters.
   </div>
 
-  <!-- Map Container -->
-  <div id="map" style="height: 600px; width: 100%;"></div>
+  <!-- Map and Legend -->
+  <div class="map-legend-row">
+    <div class="map-container">
+      <div id="map"></div>
+    </div>
+    <div id="legend">
+      <h4>Legend</h4>
+      <div><img src="/static/icons/tree.png" width="24" height="24"> Natural</div>
+      <div><img src="/static/icons/building.png" width="24" height="24"> Manmade</div>
+    </div>
+  </div>
 
   <!-- Login/Signup Form (Visible only if not logged in) -->
   {% if not session.get('user_id') %}
@@ -124,17 +131,6 @@
     let clusterer = null;
     let infoWindow;
 
-    //const icons = {
-      //Natural: {
-      //url: '/static/icons/tree.png', 
-      //scaledSize: new google.maps.Size(32, 32), 
-      //},
-      //Manmade: {
-      //url: '/static/icons/building.png',
-      //scaledSize: new google.maps.Size(32, 32),
-      //}
-    //};
-    
     function initMap() {
       map = new google.maps.Map(document.getElementById("map"), {
         center: { lat: 39.5, lng: -98.35 }, // Center of the US
@@ -174,7 +170,13 @@
             const marker = new google.maps.Marker({
               position: { lat: place.lat, lng: place.lng },
               map,
-              title: place.name
+              title: place.name,
+              icon: {
+                url: place.type === "Natural"
+                  ? "/static/icons/tree.png"
+                  : "/static/icons/building.png",
+                scaledSize: new google.maps.Size(32, 32),
+              }
             });
 
             // Extend bounds for each marker's position

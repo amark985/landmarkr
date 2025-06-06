@@ -41,6 +41,14 @@ main {
   margin: 0 auto;
 }
 
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+}
+
 /* === Landmark Cards === */
 ul {
   list-style-type: none;
@@ -86,4 +94,48 @@ footer {
   text-align: center;
   padding: 1rem;
   background-color: #017b8b;
-  color: #
+  color: #ffffff;
+}
+
+/* === Map Container and Legend === */
+.map-legend-row {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  margin-top: 1rem;
+}
+
+.map-container {
+  flex: 1;
+  max-width: 1800px;
+  position: relative;
+}
+
+#map {
+  height: 600px;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+}
+
+#legend {
+  background: #f9f9f9;
+  width: 140px;
+  padding: 8px;
+  margin-left: 40px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+#legend img {
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+#legend h4 {
+  margin-top: 0;
+}
+
