@@ -44,7 +44,8 @@ def homepage():
             return redirect("/")  # Redirect to the homepage after signup
 
     # If it's a GET request, render the homepage with login/signup form
-    return render_template("homepage.html", GOOGLE_MAPS_API_KEY=GOOGLE_MAPS_API_KEY)
+    is_logged_in = "user_id" in session
+    return render_template("homepage.html", GOOGLE_MAPS_API_KEY=GOOGLE_MAPS_API_KEY, is_logged_in=is_logged_in)
 
 # Route to logout users.
 @app.route('/logout', methods=['GET', 'POST'])

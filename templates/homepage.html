@@ -211,7 +211,12 @@
           allMarkers = newMarkers;
 
           // Fit the map bounds to markers (zoom & center)
-          map.fitBounds(bounds);
+          if (data.length === 1) {
+            map.setZoom(7);  // Or a value that looks good for a single marker
+            map.setCenter(bounds.getCenter());
+          } else {
+            map.fitBounds(bounds);
+          }
 
           //Add markers to clusterer
           clusterer = new markerClusterer.MarkerClusterer({
