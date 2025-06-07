@@ -10,7 +10,7 @@ from env.config import NPS_API_KEY
 NPS_API_URL = "https://developer.nps.gov/api/v1/places?limit=50"
 API_KEY = NPS_API_KEY 
 
-# Parameters for fetching historical landmarks (you can adjust these)
+# Parameters for fetching historical landmarks
 params = {
     "api_key": API_KEY,
     "q": "historic",  # Searching for historical landmarks
