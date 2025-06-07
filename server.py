@@ -37,7 +37,7 @@ def homepage():
             if existing_user:
                 return "Account already exists."
 
-            # In production, hash the password!
+            # Hash the password
             password_hash = generate_password_hash(password)
             user = crud.create_user(email, password_hash)
             session["user_id"] = user.id
@@ -53,6 +53,7 @@ def logout():
     session.pop('user_id', None)
     return redirect('/')
 
+#Route to get landmarks.
 @app.route("/api/landmarks")
 def get_landmarks():
     name = request.args.get("name")
@@ -91,6 +92,7 @@ def save_landmark():
     else:
         return jsonify({'success': False, 'message': 'Landmark already saved'}), 200
 
+#Route to get saved landmarks for logged-in user.
 @app.route("/my_landmarks")
 def my_landmarks():
     user_id = session.get("user_id")
@@ -102,6 +104,7 @@ def my_landmarks():
 
     return render_template("saved_landmarks.html", saved_landmarks=saved_landmarks)
 
+#Route to view landmark details.
 @app.route("/landmark/<int:landmark_id>")
 def landmark_detail(landmark_id):
     landmark = crud.get_landmark_by_id(landmark_id)
