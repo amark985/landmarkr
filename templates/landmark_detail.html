@@ -5,13 +5,15 @@
 {% endblock %}
 
 {% block content %}
-    <h1>{{ landmark.name }}</h1>
+    <h1 class="landmark-name">{{ landmark.name }}</h1>
     <p><strong>Type:</strong> {{ landmark.type }}</p>
     <p><strong>State:</strong> {{ landmark.state }}</p>
     <p><strong>Description:</strong> {{ landmark.description }}</p>
 
     {% if landmark.image_url %}
+      <div class="image-container" style="text-align: center; margin: 1rem 0;">
         <img src="{{ landmark.image_url }}" alt="{{ landmark.name }}" width="400">
+      </div>
     {% endif %}
 
     {% if wikipedia_url %}
@@ -24,6 +26,99 @@
             <iframe src="{{ wikipedia_url }}" width="100%" height="600" style="border:1px solid #ccc;"></iframe>
         </details>
     {% endif %}
+  
+    <h2 class="weather-heading">Weather</h2>
+    <label for="unitSelect">Units:</label>
+    <select id="unitSelect" onchange="saveUnitPreference(); loadWeather();">
+      <option value="imperial">Fahrenheit (°F)</option>
+      <option value="metric">Celsius (°C)</option>
+    </select>
+
+    <div id="weather-container">
+      <p>Loading weather data...</p>
+    </div>
+
+    <script>
+      function saveUnitPreference() {
+        const unit = document.getElementById("unitSelect").value;
+        document.cookie = `unit=${unit}; path=/; max-age=31536000`; // 1 year
+      }
+
+      function getUnitPreference() {
+        const cookies = document.cookie.split("; ");
+        for (const cookie of cookies) {
+          const [name, value] = cookie.split("=");
+          if (name === "unit") return value;
+        }
+        return "imperial"; // default
+      }
+
+      function loadWeather() {
+        const unit = document.getElementById("unitSelect").value;
+
+        fetch(`/api/weather?lat={{ landmark.latitude }}&lng={{ landmark.longitude }}&units=${unit}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data.error) {
+              document.getElementById("weather-container").innerHTML = `<p>${data.error}</p>`;
+              return;
+            }
+
+            const current = data.current || {};
+            const forecast = data.forecast || [];
+            const tempUnit = unit === 'metric' ? '°C' : '°F';
+
+            const currentTemp = current.temperature ?? "N/A";
+            const currentDesc = current.description ?? "Unknown";
+            const currentIcon = current.icon ?? null;
+
+            const currentHtml = `
+             <p class="current-weather">
+               <p><strong>Current:</strong> ${currentTemp}${tempUnit}, ${currentDesc}</p>
+               ${currentIcon ? `<img src="https://openweathermap.org/img/wn/${currentIcon}@2x.png" alt="Current weather icon">` : ""}
+            </p>
+            `;
+            
+            const forecastHtml = forecast.filter((_, i) => i % 8 === 0).slice(0, 5).map(day => {
+              const date = new Date(day.dt_txt).toLocaleDateString();
+              const temp = day.main?.temp ?? "N/A";
+              const desc = day.weather?.[0]?.description ?? "Unknown";
+              const icon = day.weather?.[0]?.icon;
+
+              return `
+                <li class="weather-forecast-item">
+                  <strong>${date}:</strong> ${temp}${tempUnit}, ${desc}
+                  ${icon ? `<img src="https://openweathermap.org/img/wn/${icon}@2x.png" alt="Forecast icon">` : ""}
+                </li>
+              `;
+            }).join("");
+
+            document.getElementById("weather-container").innerHTML = `
+              <div class="current-weather-card">
+                <p class="current-weather">
+                  <strong>Current:</strong> ${currentTemp}${tempUnit}, ${currentDesc}
+                  ${currentIcon ? `<img src="https://openweathermap.org/img/wn/${currentIcon}@2x.png" alt="Current weather icon">` : ""}
+                </p>
+              </div>
+
+              <div class="weather-card">
+                <h4>5-Day Forecast</h4>
+                <ul>${forecastHtml}</ul>
+              </div>
+            `;
+          })
+          .catch(err => {
+            console.error(err);
+            document.getElementById("weather-container").innerHTML = `<p>Weather data not available.</p>`;
+          });
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const unit = getUnitPreference();
+        document.getElementById("unitSelect").value = unit;
+        loadWeather();
+      });
+    </script>
 
     <p><a href="/">Back to Map</a> | <a href="/my_landmarks">Back to My Saved Landmarks</a></p>
 {% endblock %}
