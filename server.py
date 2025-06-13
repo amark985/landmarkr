@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, session, jsonify
+from flask import Flask, render_template, request, redirect, session, jsonify, url_for
 from model import connect_to_db, db, SavedLandmark
 from api.wikipedia_api import fetch_wiki_data
 from api.weather_api import get_current_weather, get_forecast_weather
@@ -105,9 +105,14 @@ def my_landmarks():
     if not user_id:
         return redirect("/")
 
+    # Get all saved landmarks for user
     saved_landmarks = crud.get_user_saved_landmarks(user_id)
 
-    return render_template("saved_landmarks.html", saved_landmarks=saved_landmarks)
+    # Split into bucket list and regular saves
+    bucket_list = [entry.landmark for entry in saved_landmarks if entry.is_bucket_list]
+    regular_saves = [entry.landmark for entry in saved_landmarks if not entry.is_bucket_list]
+
+    return render_template("saved_landmarks.html", bucket_list=bucket_list, regular_saves=regular_saves)
 
 
 #Route to view landmark details.
@@ -168,6 +173,32 @@ def api_weather():
             "icon": current.get("weather", [{}])[0].get("icon"),
         },
         "forecast": forecast.get("list", [])
+    })
+
+# Route to allow user to save landmark to a bucket list under Saved Landmarks.
+@app.route("/toggle-bucket/<int:landmark_id>", methods=["POST"])
+def toggle_bucket_list(landmark_id):
+    user_id = session.get("user_id")
+
+    if not user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    saved = SavedLandmark.query.filter_by(user_id=user_id, landmark_id=landmark_id).first()
+
+    if saved:
+        saved.is_bucket_list = not saved.is_bucket_list
+        db.session.commit()
+        new_state = saved.is_bucket_list
+    else:
+        saved = SavedLandmark(user_id=user_id, landmark_id=landmark_id, is_bucket_list=True)
+        db.session.add(saved)
+        db.session.commit()
+        new_state = True
+
+    return jsonify({ 
+        "success": True,
+        "is_bucket_list": new_state,
+        "landmark_id": landmark_id
     })
 
 

@@ -79,8 +79,7 @@ def save_landmark_for_user(user_id, landmark_id):
     return saved
     
 def get_user_saved_landmarks(user_id):
-    saved = SavedLandmark.query.filter_by(user_id=user_id).all()
-    return [entry.landmark for entry in saved]
+    return SavedLandmark.query.filter_by(user_id=user_id).all()
 
 def unsave_landmark_for_user(user_id, landmark_id):
     saved = SavedLandmark.query.filter_by(user_id=user_id, landmark_id=landmark_id).first()

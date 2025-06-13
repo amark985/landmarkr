@@ -3,9 +3,9 @@
 {% block content %}
   <h2>My Saved Landmarks</h2>
   
-  {% if saved_landmarks %}
-    <ul>
-      {% for landmark in saved_landmarks %}
+    <h3 id="bucket-heading" {% if not bucket_list %}style="display: none;"{% endif %}>Bucket List</h3>
+    <ul id="bucket-list" {% if not bucket_list %}style="display: none;"{% endif %}>
+      {% for landmark in bucket_list %}
         <li data-landmark-id="{{ landmark.id }}">
           <a href="{{ url_for('landmark_detail', landmark_id=landmark.id) }}">
             <strong>{{ landmark.name }}</strong>
@@ -19,14 +19,44 @@
             <img src="{{ landmark.image_url }}" width="100"><br>
           {% endif %}
 
-          <button class="remove-btn" data-id="{{ landmark.id }}"></button>Remove</button>
+          <!-- Toggle button: currently in bucket list -->
+          <button class="toggle-bucket-btn" data-id="{{ landmark.id }}">
+            Remove from Bucket List
+          </button>
+
+          <button class="remove-btn" data-id="{{ landmark.id }}">Remove from Saved Landmarks</button>
         </li>
       {% endfor %}
     </ul>
-  {% else %}
-    <p>You have no saved landmarks.</p>
-  {% endif %}
-  
+    <p id="bucket-empty" {% if bucket_list %}style="display: none;"{% endif %}>You have no landmarks in your Bucket List.</p>
+
+    <h3 id="saved-heading" {% if not regular_saves %}style="display: none;"{% endif %}>Saved Landmarks</h3>
+    <ul id="saved-list" {% if not regular_saves %}style="display: none;"{% endif %}>
+      {% for landmark in regular_saves %}
+        <li data-landmark-id="{{ landmark.id }}">
+          <a href="{{ url_for('landmark_detail', landmark_id=landmark.id) }}">
+            <strong>{{ landmark.name }}</strong>
+          </a><br>
+          {{ landmark.state }}<br>
+          Type: {{ landmark.type }}<br>
+          {% if landmark.description %}
+            <em>{{ landmark.description }}</em><br>
+          {% endif %}
+          {% if landmark.image_url %}
+            <img src="{{ landmark.image_url }}" width="100"><br>
+          {% endif %}
+
+          <!-- Toggle button: currently NOT in bucket list -->
+          <button class="toggle-bucket-btn" data-id="{{ landmark.id }}">
+            Add to Bucket List
+          </button>
+
+          <button class="remove-btn" data-id="{{ landmark.id }}">Remove from Saved Landmarks</button>
+        </li>
+      {% endfor %}
+    </ul>
+    <p id="saved-empty" {% if regular_saves %}style="display: none;"{% endif %}>You have no saved landmarks.</p>
+
   <p><a href="/">Back to Map</a></p>
 
   <!-- Confirmation Message -->
@@ -37,6 +67,39 @@
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const messageDiv = document.getElementById("message");
+
+    function updateSectionVisibility() {
+      const savedList = document.getElementById("saved-list");
+      const bucketList = document.getElementById("bucket-list");
+
+      const savedEmpty = document.getElementById("saved-empty");
+      const bucketEmpty = document.getElementById("bucket-empty");
+
+      const savedHeading = document.getElementById("saved-heading");
+      const bucketHeading = document.getElementById("bucket-heading");
+
+      // Saved
+      if (savedList.children.length === 0) {
+        savedList.style.display = "none";
+        savedHeading.style.display = "none";
+        savedEmpty.style.display = "block";
+      } else {
+        savedList.style.display = "block";
+        savedHeading.style.display = "block";
+        savedEmpty.style.display = "none";
+      }
+
+      // Bucket
+      if (bucketList.children.length === 0) {
+        bucketList.style.display = "none";
+        bucketHeading.style.display = "none";
+        bucketEmpty.style.display = "block";
+      } else {
+        bucketList.style.display = "block";
+        bucketHeading.style.display = "block";
+        bucketEmpty.style.display = "none";
+      }
+    }
 
     document.querySelectorAll(".remove-btn").forEach(button => {
       button.addEventListener("click", function () {
@@ -54,19 +117,62 @@
           .then(data => {
             if (data.message) {
               //Remove the landmark from the list
-              const li = this.closest("li");
-              li.remove();
+              this.closest("li").remove();
+              updateSectionVisibility();
 
               //Show confirmation message
               messageDiv.textContent = "Landmark removed!";
               messageDiv.style.display = "block";
 
               //Hide the message after 2 seconds
-              setTimeout(() => {
-                messageDiv.style.display = "none";
-              }, 2000);
+              setTimeout(() => messageDiv.style.display = "none", 2000);
             }
           })
+        }
+      });
+    });
+
+    // New toggle bucket list button handler
+    document.querySelectorAll(".toggle-bucket-btn").forEach(button => {
+      button.addEventListener("click", async function () {
+        const btn = this;
+        const li = btn.closest("li");
+        const landmarkId = btn.dataset.id;
+
+        try {
+          const response = await fetch(`/toggle-bucket/${landmarkId}`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            credentials: "same-origin"
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            const isBucket = data.is_bucket_list;
+            btn.textContent = isBucket ? "Remove from Bucket List" : "Add to Bucket List";
+            messageDiv.textContent = isBucket ? "Added to Bucket List!" : "Removed from Bucket List!";
+            messageDiv.style.display = "block";
+            setTimeout(() => messageDiv.style.display = "none", 2000);
+
+            // Get or create target list
+            const bucketList = document.getElementById("bucket-list");
+            const savedList = document.getElementById("saved-list");
+            
+            if (isBucket) {
+              // Move to Bucket List
+              bucketList.appendChild(li);
+              } else {
+                savedList.appendChild(li);
+              }
+
+              updateSectionVisibility();
+          } else if (data.error) {
+            alert("Error: " + data.error);
+          }
+        } catch (error) {
+          alert("An unexpected error occurred.");
+          console.error(error);
         }
       });
     });

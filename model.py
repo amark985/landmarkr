@@ -38,11 +38,21 @@ class Landmark(db.Model):
     
     def to_dict(self, user_id=None):
         saved = False
+        bucketed = False
+
         if user_id:
             saved = db.session.query(
                 db.exists().where(
                     (SavedLandmark.user_id == user_id) & 
                     (SavedLandmark.landmark_id == self.id)
+                )
+            ).scalar()
+
+            bucketed = db.session.query(
+                db.exists().where(
+                    (SavedLandmark.user_id == user_id) & 
+                    (SavedLandmark.landmark_id == self.id) & 
+                    (SavedLandmark.is_bucket_list == True)
                 )
             ).scalar()
 
@@ -55,7 +65,8 @@ class Landmark(db.Model):
             "lat": self.latitude,
             "lng": self.longitude,
             "image_url": self.image_url,
-            "is_saved": saved
+            "is_saved": saved,
+            "on_bucket_list": bucketed
         }
 
 
@@ -65,9 +76,10 @@ class SavedLandmark(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     landmark_id = db.Column(db.Integer, db.ForeignKey("landmarks.id"), nullable=False)
+    is_bucket_list = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
-        return f"<SavedLandmark id={self.id} user_id={self.user_id} landmark_id={self.landmark_id}>"
+        return f"<SavedLandmark id={self.id} user_id={self.user_id} landmark_id={self.landmark_id} bucket={self.is_bucket_list}>"
 
 
 class LandmarkCategory(db.Model): 
