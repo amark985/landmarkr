@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, session, jsonify, url_for
+from flask import Flask, render_template, request, redirect, session, jsonify, url_for, flash
 from model import connect_to_db, db, SavedLandmark
 from api.wikipedia_api import fetch_wiki_data
 from api.weather_api import get_current_weather, get_forecast_weather
@@ -12,41 +12,73 @@ app.secret_key = FLASK_SECRET_KEY
 
 connect_to_db(app)
 
-# Homepage route with Login and Signup
-@app.route("/", methods=["GET", "POST"])
-def homepage():
-    if request.method == "POST":
-        # Handle login or signup
-        email = request.form["email"]
-        password = request.form["password"]
+# Welcome homepage with guest/login/signup options
+@app.route("/")
+def home():
+    return render_template("home.html")
 
-        # Check if it's a login or signup action
-        action = request.form["action"]
 
-        if action == "login":
-            # Attempt login
-            user = crud.get_user_by_email(email)
-            if user and check_password_hash(user.password_hash, password):
-                session["user_id"] = user.id
-                return redirect("/")  # Redirect to the homepage after login
-            else:
-                return "Invalid credentials, please try again."
-
-        elif action == "signup":
-            # Handle signup
-            existing_user = crud.get_user_by_email(email)
-            if existing_user:
-                return "Account already exists."
-
-            # Hash the password
-            password_hash = generate_password_hash(password)
-            user = crud.create_user(email, password_hash)
-            session["user_id"] = user.id
-            return redirect("/")  # Redirect to the homepage after signup
-
-    # If it's a GET request, render the homepage with login/signup form
+# Main landmark map
+@app.route("/map")
+def landmark_map():
     is_logged_in = "user_id" in session
-    return render_template("homepage.html", GOOGLE_MAPS_API_KEY=GOOGLE_MAPS_API_KEY, is_logged_in=is_logged_in)
+
+    all_locations = sorted(set(l.state for l in crud.get_all_landmarks()))
+    special_regions = {"U.S. Virgin Islands", "the District of Columbia", "New York City"}
+    states = [loc for loc in all_locations if loc not in special_regions]
+    special_regions_list = [loc for loc in all_locations if loc in special_regions]
+
+    return render_template(
+        "homepage.html", GOOGLE_MAPS_API_KEY=GOOGLE_MAPS_API_KEY, is_logged_in=is_logged_in, states=states, special_regions=special_regions_list)
+
+
+# Route to login user
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        email = request.form.get("email")
+        password = request.form.get("password")
+
+        # If form is missing input, show form again with error message
+        if not email or not password:
+            flash("Email and password are required.", "danger")
+            return render_template("login.html")
+
+        user = crud.get_user_by_email(email)
+        if user and check_password_hash(user.password_hash, password):
+            session["user_id"] = user.id
+            flash("Logged in successfully!", "success")
+            return redirect("/map")
+        else:
+            flash("Invalid login credentials.", "danger")
+            return render_template("login.html")
+    return render_template("login.html")
+
+
+# Route to sign up user
+@app.route("/signup", methods=["GET", "POST"])
+def signup():
+    if request.method == "POST":
+        email = request.form.get("email")
+        password = request.form.get("password")
+
+        # If form is missing input, show form again with error message
+        if not email or not password:
+            flash("Email and password are required.", "danger")
+            return render_template("signup.html")
+
+        existing_user = crud.get_user_by_email(email)
+        if existing_user:
+            flash("Account already exists. Please log in.", "warning")
+            return redirect("/login")
+        
+        # After successful signup
+        password_hash = generate_password_hash(password)
+        user = crud.create_user(email, password_hash)
+        session["user_id"] = user.id
+        flash("Account created successfully! Welcome!", "success")
+        return redirect("/map")
+    return render_template("signup.html")
 
 
 # Route to logout users.
@@ -56,7 +88,7 @@ def logout():
     return redirect('/')
 
 
-#Route to get landmarks.
+# Route to get landmarks.
 @app.route("/api/landmarks")
 def get_landmarks():
     name = request.args.get("name")
@@ -97,7 +129,7 @@ def save_landmark():
         return jsonify({'success': False, 'message': 'Landmark already saved'}), 200
 
 
-#Route to get saved landmarks for logged-in user.
+# Route to get saved landmarks for logged-in user.
 @app.route("/my_landmarks")
 def my_landmarks():
     user_id = session.get("user_id")
@@ -112,10 +144,13 @@ def my_landmarks():
     bucket_list = [entry.landmark for entry in saved_landmarks if entry.is_bucket_list]
     regular_saves = [entry.landmark for entry in saved_landmarks if not entry.is_bucket_list]
 
+    for saved in saved_landmarks:
+        saved.landmark.visited = saved.visited
+        
     return render_template("saved_landmarks.html", bucket_list=bucket_list, regular_saves=regular_saves)
 
 
-#Route to view landmark details.
+# Route to view landmark details.
 @app.route("/landmark/<int:landmark_id>")
 def landmark_detail(landmark_id):
     landmark = crud.get_landmark_by_id(landmark_id)
@@ -199,6 +234,30 @@ def toggle_bucket_list(landmark_id):
         "success": True,
         "is_bucket_list": new_state,
         "landmark_id": landmark_id
+    })
+
+# Route to toggle the visited status for a saved landmark
+@app.route("/toggle-visited/<int:landmark_id>", methods=["POST"])
+def toggle_visited(landmark_id):
+    user_id = session.get("user_id")
+    if not user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    saved = SavedLandmark.query.filter_by(user_id=user_id, landmark_id=landmark_id).first()
+    if not saved:
+        return jsonify({"error": "Landmark not saved"}), 400
+
+    saved.visited = not saved.visited
+    db.session.commit()
+
+    # Calculate visited count for rewards
+    visited_count = SavedLandmark.query.filter_by(user_id=user_id, visited=True).count()
+
+    return jsonify({
+        "success": True,
+        "visited": saved.visited,
+        "landmark_id": landmark_id,
+        "visited_count": visited_count
     })
 
 

@@ -77,6 +77,7 @@ class SavedLandmark(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     landmark_id = db.Column(db.Integer, db.ForeignKey("landmarks.id"), nullable=False)
     is_bucket_list = db.Column(db.Boolean, default=False)
+    visited = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
         return f"<SavedLandmark id={self.id} user_id={self.user_id} landmark_id={self.landmark_id} bucket={self.is_bucket_list}>"

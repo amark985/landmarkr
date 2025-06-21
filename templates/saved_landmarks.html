@@ -1,181 +1,218 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h2>My Saved Landmarks</h2>
-  
-    <h3 id="bucket-heading" {% if not bucket_list %}style="display: none;"{% endif %}>Bucket List</h3>
-    <ul id="bucket-list" {% if not bucket_list %}style="display: none;"{% endif %}>
-      {% for landmark in bucket_list %}
-        <li data-landmark-id="{{ landmark.id }}">
-          <a href="{{ url_for('landmark_detail', landmark_id=landmark.id) }}">
-            <strong>{{ landmark.name }}</strong>
-          </a><br>
-          {{ landmark.state }}<br>
-          Type: {{ landmark.type }}<br>
-          {% if landmark.description %}
-            <em>{{ landmark.description }}</em><br>
-          {% endif %}
-          {% if landmark.image_url %}
-            <img src="{{ landmark.image_url }}" width="100"><br>
-          {% endif %}
+<div class="container py-5">
+  <div class="card p-4 shadow-lg rounded-4">
+    <h2 class="text-center mb-4 fw-bold">My Saved Landmarks</h2>
 
-          <!-- Toggle button: currently in bucket list -->
-          <button class="toggle-bucket-btn" data-id="{{ landmark.id }}">
-            Remove from Bucket List
-          </button>
-
-          <button class="remove-btn" data-id="{{ landmark.id }}">Remove from Saved Landmarks</button>
-        </li>
-      {% endfor %}
+    <!-- Tab Navigation -->
+    <ul class="nav nav-tabs mb-4" id="landmarkTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="saved-tab" data-bs-toggle="tab" data-bs-target="#saved" type="button" role="tab">Saved</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="bucket-tab" data-bs-toggle="tab" data-bs-target="#bucket" type="button" role="tab">Bucket List</button>
+      </li>
     </ul>
-    <p id="bucket-empty" {% if bucket_list %}style="display: none;"{% endif %}>You have no landmarks in your Bucket List.</p>
 
-    <h3 id="saved-heading" {% if not regular_saves %}style="display: none;"{% endif %}>Saved Landmarks</h3>
-    <ul id="saved-list" {% if not regular_saves %}style="display: none;"{% endif %}>
-      {% for landmark in regular_saves %}
-        <li data-landmark-id="{{ landmark.id }}">
-          <a href="{{ url_for('landmark_detail', landmark_id=landmark.id) }}">
-            <strong>{{ landmark.name }}</strong>
-          </a><br>
-          {{ landmark.state }}<br>
-          Type: {{ landmark.type }}<br>
-          {% if landmark.description %}
-            <em>{{ landmark.description }}</em><br>
-          {% endif %}
-          {% if landmark.image_url %}
-            <img src="{{ landmark.image_url }}" width="100"><br>
-          {% endif %}
+    <!-- Tab Content -->
+    <div class="tab-content" id="landmarkTabsContent">
 
-          <!-- Toggle button: currently NOT in bucket list -->
-          <button class="toggle-bucket-btn" data-id="{{ landmark.id }}">
-            Add to Bucket List
-          </button>
+      <!-- Saved Landmarks Tab -->
+      <div class="tab-pane fade show active" id="saved" role="tabpanel" aria-labelledby="saved-tab">
+        {% if regular_saves %}
+          <ul id="saved-list" class="list-group list-group-flush">
+            {% for landmark in regular_saves %}
+              <li class="list-group-item py-3" data-landmark-id="{{ landmark.id }}">
+                <h5>
+                  <a href="{{ url_for('landmark_detail', landmark_id=landmark.id) }}">{{ landmark.name }}</a>
+                </h5>
+                <p class="mb-1">{{ landmark.state }} | Type: {{ landmark.type }}</p>
+                {% if landmark.description %}
+                  <p class="fst-italic small">{{ landmark.description }}</p>
+                {% endif %}
+                {% if landmark.image_url %}
+                  <img src="{{ landmark.image_url }}" width="120" class="rounded mb-2">
+                {% endif %}
+                <div class="form-check">
+                  <input class="form-check-input visited-checkbox" type="checkbox" data-id="{{ landmark.id }}" id="visited-{{ landmark.id }}" {% if landmark.visited %}checked{% endif %}>
+                  <label class="form-check-label" for="visited-{{ landmark.id }}">Visited</label>
+                </div>
+                <button class="btn btn-outline-primary btn-sm mt-2 toggle-bucket-btn" data-id="{{ landmark.id }}">Add to Bucket List</button>
+                <button class="btn btn-outline-danger btn-sm mt-2 remove-btn" data-id="{{ landmark.id }}">Remove</button>
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+        <p id="saved-empty" {% if regular_saves %}class="text-muted fst-italic mt-3" style="display: none;"{% endif %}>You have no saved landmarks.</p>
+      </div>
 
-          <button class="remove-btn" data-id="{{ landmark.id }}">Remove from Saved Landmarks</button>
-        </li>
-      {% endfor %}
-    </ul>
-    <p id="saved-empty" {% if regular_saves %}style="display: none;"{% endif %}>You have no saved landmarks.</p>
+      <!-- Bucket List Tab -->
+      <div class="tab-pane fade" id="bucket" role="tabpanel" aria-labelledby="bucket-tab">
+        {% if bucket_list %}
+          <ul id="bucket-list" class="list-group list-group-flush">
+            {% for landmark in bucket_list %}
+              <li class="list-group-item py-3" data-landmark-id="{{ landmark.id }}">
+                <h5>
+                  <a href="{{ url_for('landmark_detail', landmark_id=landmark.id) }}">{{ landmark.name }}</a>
+                </h5>
+                <p class="mb-1">{{ landmark.state }} | Type: {{ landmark.type }}</p>
+                {% if landmark.description %}
+                  <p class="fst-italic small">{{ landmark.description }}</p>
+                {% endif %}
+                {% if landmark.image_url %}
+                  <img src="{{ landmark.image_url }}" width="120" class="rounded mb-2">
+                {% endif %}
+                <div class="form-check">
+                  <input class="form-check-input visited-checkbox" type="checkbox" data-id="{{ landmark.id }}" id="visited-bucket-{{ landmark.id }}" {% if landmark.visited %}checked{% endif %}>
+                  <label class="form-check-label" for="visited-bucket-{{ landmark.id }}">Visited</label>
+                </div>
+                <button class="btn btn-outline-secondary btn-sm mt-2 toggle-bucket-btn" data-id="{{ landmark.id }}">Remove from Bucket List</button>
+                <button class="btn btn-outline-danger btn-sm mt-2 remove-btn" data-id="{{ landmark.id }}">Remove</button>
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+        <p id="bucket-empty" {% if bucket_list %}class="text-muted fst-italic mt-3" style="display: none;"{% endif %}>You have no landmarks in your Bucket List.</p>
+      </div>
+    </div>
 
-  <p><a href="/">Back to Map</a></p>
+    <!-- Reward Message -->
+    <div id="reward-message" class="alert alert-success mt-4 text-center" style="display:none;"></div>
 
-  <!-- Confirmation Message -->
-   <div id="message" style="color: green; font-weight: bold; display: none; margin-top: 10px;"></div>
+    <!-- Navigation -->
+    <div class="text-center mt-4">
+      <a href="{{ url_for('landmark_map') }}" class="btn btn-outline-dark">← Back to Map</a>
+    </div>
+
+    <div id="message" class="text-success fw-bold mt-3 text-center" style="display: none;"></div>
+  </div>
+</div>
 {% endblock %}
 
 {% block scripts %}
+{{ super() }}
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const messageDiv = document.getElementById("message");
+    const rewardDiv = document.getElementById("reward-message");
 
-    function updateSectionVisibility() {
-      const savedList = document.getElementById("saved-list");
-      const bucketList = document.getElementById("bucket-list");
+    // Attach initial event listeners to all landmarks
+    document.querySelectorAll("li[data-landmark-id]").forEach(rebindLandmarkListeners);
 
-      const savedEmpty = document.getElementById("saved-empty");
-      const bucketEmpty = document.getElementById("bucket-empty");
+    function rebindLandmarkListeners(li) {
+      const removeBtn = li.querySelector(".remove-btn");
+      const bucketBtn = li.querySelector(".toggle-bucket-btn");
+      const visitedBox = li.querySelector(".visited-checkbox");
 
-      const savedHeading = document.getElementById("saved-heading");
-      const bucketHeading = document.getElementById("bucket-heading");
-
-      // Saved
-      if (savedList.children.length === 0) {
-        savedList.style.display = "none";
-        savedHeading.style.display = "none";
-        savedEmpty.style.display = "block";
-      } else {
-        savedList.style.display = "block";
-        savedHeading.style.display = "block";
-        savedEmpty.style.display = "none";
+      if (removeBtn) {
+        removeBtn.addEventListener("click", function () {
+          const landmarkId = this.dataset.id;
+          if (confirm("Are you sure you want to remove this landmark?")) {
+            fetch("/unsave", {
+              method: "POST",
+              headers: { "Content-type": "application/x-www-form-urlencoded" },
+              body: `landmark_id=${landmarkId}`
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.message) {
+                li.remove();
+                showMessage("Landmark removed!");
+                checkEmptyStates();
+              }
+            });
+          }
+        });
       }
 
-      // Bucket
-      if (bucketList.children.length === 0) {
-        bucketList.style.display = "none";
-        bucketHeading.style.display = "none";
-        bucketEmpty.style.display = "block";
-      } else {
-        bucketList.style.display = "block";
-        bucketHeading.style.display = "block";
-        bucketEmpty.style.display = "none";
+      if (bucketBtn) {
+        bucketBtn.addEventListener("click", async function () {
+          const btn = this;
+          const landmarkId = btn.dataset.id;
+
+          try {
+            const response = await fetch(`/toggle-bucket/${landmarkId}`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              credentials: "same-origin"
+            });
+            const data = await response.json();
+
+            if (data.success) {
+              const isBucket = data.is_bucket_list;
+              btn.textContent = isBucket ? "Remove from Bucket List" : "Add to Bucket List";
+              showMessage(isBucket ? "Added to Bucket List!" : "Removed from Bucket List!");
+
+              const savedList = document.getElementById("saved-list");
+              const bucketList = document.getElementById("bucket-list");
+
+              if (isBucket) {
+                bucketList?.appendChild(li);
+              } else {
+                savedList?.appendChild(li);
+              }
+
+              rebindLandmarkListeners(li);
+              checkEmptyStates();
+            }
+          } catch (error) {
+            console.error("Error:", error);
+          }
+        });
+      }
+
+      if (visitedBox) {
+        visitedBox.addEventListener("change", async function () {
+          const landmarkId = this.dataset.id;
+          const isChecked = this.checked;
+
+          try {
+            const response = await fetch(`/toggle-visited/${landmarkId}`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              credentials: "same-origin"
+            });
+            const data = await response.json();
+
+            if (data.success) {
+              showMessage(`Marked as ${data.visited ? "visited" : "not visited"}.`);
+              checkRewards(data.visited_count);
+            } else {
+              alert("Failed to update visited status.");
+              this.checked = !isChecked;
+            }
+          } catch (error) {
+            alert("An error occurred.");
+            this.checked = !isChecked;
+            console.error(error);
+          }
+        });
       }
     }
 
-    document.querySelectorAll(".remove-btn").forEach(button => {
-      button.addEventListener("click", function () {
-        const landmarkId = this.dataset.id;
+    function showMessage(text) {
+      messageDiv.textContent = text;
+      messageDiv.style.display = "block";
+      setTimeout(() => messageDiv.style.display = "none", 2000);
+    }
 
-        if (confirm("Are you sure you want to remove this landmark?")) {
-          fetch("/unsave", {
-            method: "POST",
-            headers: {
-              "Content-type": "application/x-www-form-urlencoded"
-            },
-            body: `landmark_id=${landmarkId}`
-          })
-          .then(response => response.json())
-          .then(data => {
-            if (data.message) {
-              //Remove the landmark from the list
-              this.closest("li").remove();
-              updateSectionVisibility();
+    function checkEmptyStates() {
+      document.getElementById("saved-empty").style.display =
+        document.querySelectorAll("#saved-list li").length === 0 ? "block" : "none";
+      document.getElementById("bucket-empty").style.display =
+        document.querySelectorAll("#bucket-list li").length === 0 ? "block" : "none";
+    }
 
-              //Show confirmation message
-              messageDiv.textContent = "Landmark removed!";
-              messageDiv.style.display = "block";
-
-              //Hide the message after 2 seconds
-              setTimeout(() => messageDiv.style.display = "none", 2000);
-            }
-          })
-        }
-      });
-    });
-
-    // New toggle bucket list button handler
-    document.querySelectorAll(".toggle-bucket-btn").forEach(button => {
-      button.addEventListener("click", async function () {
-        const btn = this;
-        const li = btn.closest("li");
-        const landmarkId = btn.dataset.id;
-
-        try {
-          const response = await fetch(`/toggle-bucket/${landmarkId}`, {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            credentials: "same-origin"
-          });
-
-          const data = await response.json();
-
-          if (data.success) {
-            const isBucket = data.is_bucket_list;
-            btn.textContent = isBucket ? "Remove from Bucket List" : "Add to Bucket List";
-            messageDiv.textContent = isBucket ? "Added to Bucket List!" : "Removed from Bucket List!";
-            messageDiv.style.display = "block";
-            setTimeout(() => messageDiv.style.display = "none", 2000);
-
-            // Get or create target list
-            const bucketList = document.getElementById("bucket-list");
-            const savedList = document.getElementById("saved-list");
-            
-            if (isBucket) {
-              // Move to Bucket List
-              bucketList.appendChild(li);
-              } else {
-                savedList.appendChild(li);
-              }
-
-              updateSectionVisibility();
-          } else if (data.error) {
-            alert("Error: " + data.error);
-          }
-        } catch (error) {
-          alert("An unexpected error occurred.");
-          console.error(error);
-        }
-      });
-    });
+    function checkRewards(count) {
+      const milestones = [5, 10, 20, 50];
+      if (milestones.includes(count)) {
+        rewardDiv.textContent = `🎉 Congrats! You've visited ${count} landmark${count > 1 ? 's' : ''}! Keep exploring! 🌟`;
+        rewardDiv.style.display = "block";
+        setTimeout(() => rewardDiv.style.display = "none", 5000);
+      }
+    }
   });
 </script>
 {% endblock %}
+

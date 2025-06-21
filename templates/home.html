@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div style="width: 100%; height: 100vh; overflow: hidden; position: relative;">
+    <video autoplay muted loop playsinline 
+           style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; z-index: -1;">
+      <source src="{{ url_for('static', filename='videos/landmarks.mp4') }}" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+
+    <div style="position: relative; z-index: 1; color: white; text-align: center; top: 40%; transform: translateY(-40%); padding: 0 20px;">
+      <h1 style="font-size: 3.5rem; font-weight: bold; text-shadow: 0 2px 8px rgba(0,0,0,0.5);">
+        Welcome to <span class="text-primary">Landmarkr</span>
+      </h1>
+      <p style="font-size: 1.5rem; margin-top: 0.5rem; margin-bottom: 1.5rem; text-shadow: 0 2px 6px rgba(0,0,0,0.4);">
+        Explore breathtaking landscapes and historic landmarks across the U.S.
+      </p>
+      <div class="d-grid gap-3 mt-4" style="max-width: 400px; margin: 0 auto;">
+        <a href="{{ url_for('landmark_map') }}" class="btn btn-outline-light btn-lg">Continue as Guest</a>
+        <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg">Log In</a>
+        <a href="{{ url_for('signup') }}" class="btn btn-secondary btn-lg">Sign Up</a>
+      </div>
+    </div>
+  </div>
+
+<!-- Featured Landmarks Section -->
+<section class="container mt-5">
+  <h2 class="text-center mb-4">Featured Landmarks</h2>
+  <div class="row g-4">
+    <!-- Landmark Cards -->
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm">
+        <img src="{{ url_for('static', filename='images/statue_of_liberty.jpg') }}" class="card-img-top" alt="Statue of Liberty">
+        <div class="card-body">
+          <h5 class="card-title">Statue of Liberty</h5>
+          <p class="card-text">A symbol of freedom and democracy in New York City.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm">
+        <img src="{{ url_for('static', filename='images/grand_canyon.jpg') }}" class="card-img-top" alt="Grand Canyon">
+        <div class="card-body">
+          <h5 class="card-title">Grand Canyon</h5>
+          <p class="card-text">An awe-inspiring natural wonder in Arizona.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm">
+        <img src="{{ url_for('static', filename='images/lincoln_memorial.jpg') }}" class="card-img-top" alt="Lincoln Memorial">
+        <div class="card-body">
+          <h5 class="card-title">Lincoln Memorial</h5>
+          <p class="card-text">A tribute to President Lincoln located in Washington, D.C.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block head %}
+<style>
+  .hero-video {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: black; /* fallback */
+  }
+
+  .bg-video {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+  }
+
+  .hero-overlay {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    color: white;
+    padding: 0 20px;
+  }
+
+  .hero-overlay h1 {
+    font-size: 3.5rem;
+    font-weight: bold;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  }
+
+  .hero-overlay p {
+    font-size: 1.5rem;
+    margin-top: 0.5rem;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  }
+
+  .btn-outline-light {
+    border-color: #fff;
+    color: #fff;
+  }
+
+  .btn-outline-light:hover {
+    background-color: #fff;
+    color: #000;
+  }
+</style>
+{% endblock %}

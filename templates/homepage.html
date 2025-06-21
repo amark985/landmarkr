@@ -1,126 +1,94 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <!-- Welcome Message -->
-  <div style="margin-bottom: 1.5rem; padding: 1rem; background-color: #f0f8ff; border-radius: 10px; text-align: center;">
-    <h2>Welcome!</h2>
-    <p style="font-size: 1.1rem;">
-      Explore iconic landmarks across the U.S. — from breathtaking natural wonders to historic manmade marvels, to include the U.S. Virgin Islands and the District of Columbia (Washington, D.C.). 
-      <strong>Log in</strong> to save your favorites and build your personal travel wishlist!
-    </p>
-  </div>
+<div class="container my-5">
+
   <!-- Filter Controls -->
-  <form id="filterForm" onsubmit="handleFilterSubmit(event)">
-    <input type="text" id="nameFilter" placeholder="Search by name">
-    <select id="stateFilter">
-      <option value="">All States</option>
-      <option value="Alabama">Alabama</option>
-      <option value="Alaska">Alaska</option>
-      <option value="Arizona">Arizona</option>
-      <option value="Arkansas">Arkansas</option>
-      <option value="California">California</option>
-      <option value="Colorado">Colorado</option>
-      <option value="Connecticut">Connecticut</option>
-      <option value="Delaware">Delaware</option>
-      <option value="the District of Columbia">District of Columbia</option>
-      <option value="Florida">Florida</option>
-      <option value="Georgia">Georgia</option>
-      <option value="Hawaii">Hawaii</option>
-      <option value="Idaho">Idaho</option>
-      <option value="Illinois">Illinois</option>
-      <option value="Indiana">Indiana</option>
-      <option value="Iowa">Iowa</option>
-      <option value="Kansas">Kansas</option>
-      <option value="Kentucky">Kentucky</option>
-      <option value="Louisiana">Louisiana</option>
-      <option value="Maine">Maine</option>
-      <option value="Maryland">Maryland</option>
-      <option value="Massachusetts">Massachusetts</option>
-      <option value="Michigan">Michigan</option>
-      <option value="Minnesota">Minnesota</option>
-      <option value="Mississippi">Mississippi</option>
-      <option value="Missouri">Missouri</option>
-      <option value="Montana">Montana</option>
-      <option value="Nebraska">Nebraska</option>
-      <option value="Nevada">Nevada</option>
-      <option value="New Hampshire">New Hampshire</option>
-      <option value="New Jersey">New Jersey</option>
-      <option value="New Mexico">New Mexico</option>
-      <option value="New York">New York</option>
-      <option value="New York City">New York City</option>
-      <option value="North Carolina">North Carolina</option>
-      <option value="North Dakota">North Dakota</option>
-      <option value="Ohio">Ohio</option>
-      <option value="Oklahoma">Oklahoma</option>
-      <option value="Oregon">Oregon</option>
-      <option value="Pennsylvania">Pennsylvania</option>
-      <option value="Rhode Island">Rhode Island</option>
-      <option value="South Carolina">South Carolina</option>
-      <option value="South Dakota">South Dakota</option>
-      <option value="Tennessee">Tennessee</option>
-      <option value="Texas">Texas</option>
-      <option value="U.S. Virgin Islands">U.S. Virgin Islands</option>
-      <option value="Utah">Utah</option>
-      <option value="Vermont">Vermont</option>
-      <option value="Virginia">Virginia</option>
-      <option value="Washington">Washington</option>
-      <option value="West Virginia">West Virginia</option>
-      <option value="Wisconsin">Wisconsin</option>
-      <option value="Wyoming">Wyoming</option>
-    </select>
-    <select id="typeFilter">
-      <option value="">All Types</option>
-      <option value="Natural">Natural</option>
-      <option value="Manmade">Manmade</option>
-    </select>
-    <button type="submit">Apply Filters</button>
-    <button type="button" onclick="resetFilters()">Reset Filters</button>
+  <form id="filterForm" onsubmit="handleFilterSubmit(event)" class="row g-3 align-items-center mb-4 p-3 bg-light rounded shadow-sm">
+    <div class="col-md-4">
+      <input type="text" id="nameFilter" placeholder="Search by name" class="form-control" />
+    </div>
+    <div class="col-md-3">
+      <select id="stateFilter" class="form-select">
+        <option value="">All States & Regions</option>
+        <optgroup label="States">
+          {% for state in states %}
+            <option value="{{ state }}">{{ state }}</option>
+          {% endfor %}
+        </optgroup>
+        <optgroup label="Special Regions">
+          {% for region in special_regions %}
+            <option value="{{ region }}">{{ region }}</option>
+          {% endfor %}
+        </optgroup>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <select id="typeFilter" class="form-select">
+        <option value="">All Types</option>
+        <option value="Natural">Natural</option>
+        <option value="Manmade">Manmade</option>
+      </select>
+    </div>
+    <div class="col-md-3 d-flex gap-2">
+      <button type="submit" class="btn btn-primary flex-grow-1">Apply Filters</button>
+      <button type="button" onclick="resetFilters()" class="btn btn-secondary flex-grow-1">Reset</button>
+    </div>
   </form>
 
   <!-- No Results Message -->
-  <div id="noResultsMessage" style="display:none; color: red; font-weight: bold; margin-bottom: 1rem; text-align: center;">
+  <div id="noResultsMessage" class="text-center text-danger fw-bold mb-3" style="display:none;">
     No landmarks found for the selected filters.
   </div>
 
   <!-- Map and Legend -->
-  <div class="map-legend-row">
-    <div class="map-container">
-      <div id="map"></div>
+  <div class="d-flex flex-column flex-lg-row gap-4">
+    <div class="flex-grow-1" style="min-height: 600px;">
+      <div id="map" style="width: 100%; height: 100%; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"></div>
     </div>
-    <div id="legend">
-      <h4>Legend</h4>
-      <div><img src="/static/icons/tree.png" width="24" height="24"> Natural</div>
-      <div><img src="/static/icons/building.png" width="24" height="24"> Manmade</div>
+
+    <div id="legend" class="bg-light p-3 rounded shadow-sm" style="min-width: 180px; font-size: 14px;">
+      <h5>Legend</h5>
+      <div class="d-flex align-items-center mb-2">
+        <img src="/static/icons/tree.png" width="24" height="24" class="me-2" alt="Natural icon">
+        <span>Natural</span>
+      </div>
+      <div class="d-flex align-items-center">
+        <img src="/static/icons/building.png" width="24" height="24" class="me-2" alt="Manmade icon">
+        <span>Manmade</span>
+      </div>
     </div>
   </div>
 
   <!-- Login/Signup Form (Visible only if not logged in) -->
   {% if not session.get('user_id') %}
-    <div id="login-section">
-      <h3>Login or Sign Up to Save Landmarks</h3>
-      <form method="POST" action="/">
-        <input type="email" name="email" placeholder="Email" required>
-        <input type="password" name="password" placeholder="Password" required>
-        <input type="hidden" name="action" value="login">
-        <button type="submit">Login</button>
+    <div id="login-section" class="mt-5 p-4 bg-light rounded shadow-sm mx-auto" style="max-width: 400px;">
+      <h3 class="mb-3 text-center">Login or Sign Up to Save Landmarks</h3>
+
+      <form method="POST" action="/" class="mb-4">
+        <input type="email" name="email" placeholder="Email" required class="form-control mb-2" />
+        <input type="password" name="password" placeholder="Password" required class="form-control mb-3" />
+        <input type="hidden" name="action" value="login" />
+        <button type="submit" class="btn btn-primary w-100">Login</button>
       </form>
+
       <form method="POST" action="/">
-        <input type="email" name="email" placeholder="Email" required>
-        <input type="password" name="password" placeholder="Password" required>
-        <input type="hidden" name="action" value="signup">
-        <button type="submit">Sign Up</button>
+        <input type="email" name="email" placeholder="Email" required class="form-control mb-2" />
+        <input type="password" name="password" placeholder="Password" required class="form-control mb-3" />
+        <input type="hidden" name="action" value="signup" />
+        <button type="submit" class="btn btn-secondary w-100">Sign Up</button>
       </form>
     </div>
   {% else %}
-  <!-- Logout button for logged-in users -->
-    <form method="POST" action="/logout" style="margin-bottom: 1rem;">
-      <button type="submit">Logout</button>
+    <!-- Logout button for logged-in users -->
+    <form method="POST" action="/logout" class="mt-4 text-center">
+      <button type="submit" class="btn btn-danger btn-sm">Logout</button>
     </form>
-  {% endif %}  
+  {% endif %}
+</div>
 {% endblock %}
 
 {% block scripts %}
-  {% set is_logged_in = session.get("user_id") is not none %}
   <script>
     const isLoggedIn = {{ is_logged_in | tojson }};
   </script>
@@ -182,23 +150,25 @@
             // Extend bounds for each marker's position
             bounds.extend(marker.getPosition());
 
-            let infoContent = `
-              <strong>${place.name}</strong><br>
-              ${place.state}<br>
-              Type: ${place.type}<br>
-              ${place.description ? `<em>${place.description}</em><br>` : ''}
-              <img src="${place.image_url || '/static/images/placeholder.jpg'}" width="100"
-                   onerror="this.onerror=null; this.src='/static/images/placeholder.jpg';"><br>
-              <a href="/landmark/${place.id}">Landmark Details</a><br>
-            `;
+            const typeClass = place.type === "Natural" ? "popup-natural" : "popup-manmade";
 
-            if (isLoggedIn) {
-              if (place.is_saved) {
-                infoContent += `<button disabled>Landmark already saved</button>`;
-              } else {
-                infoContent += `<button onclick="saveLandmark('${place.id}', this)">Save Landmark</button>`;
-              } 
-            }
+            let infoContent = `
+              <div class="popup-content ${typeClass}">
+                <h6>${place.name}</h6>
+                <p><strong>${place.type} Landmark</strong> in <strong>${place.state}</strong></p>
+                ${place.description ? `<p><em>${place.description}</em></p>` : ''}
+                <img src="${place.image_url || '/static/images/placeholder.jpg'}"
+                     onerror="this.onerror=null; this.src='/static/images/placeholder.jpg';" />
+                <a href="/landmark/${place.id}">🔎 View Details</a><br>
+                ${
+                  isLoggedIn
+                    ? place.is_saved
+                      ? `<button disabled>✓ Already Saved</button>`
+                      : `<button onclick="saveLandmark('${place.id}', this)">💾 Save Landmark</button>`
+                    : ''
+                }
+              </div>
+            `;
 
             marker.addListener("click", () => {
               infoWindow.setContent(infoContent);
