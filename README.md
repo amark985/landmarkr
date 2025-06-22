@@ -1,6 +1,6 @@
 # Landmarkr 🗺️
 
-**Landmarkr** is a web app that lets users explore, save, and manage a personalized list of natural and manmade landmarks across the United States. Users can interact with a dynamic map, view current and forecasted weather conditions, and organize landmarks into custom folders such as a bucket list.
+**Landmarkr** is a web app that lets users explore, save, and manage a personalized list of natural and manmade landmarks across the United States. Users can interact with a dynamic map, view current and forecasted weather conditions, and organize landmarks into custom tabs such as a bucket list.
 
 ## 🌟 Features
 

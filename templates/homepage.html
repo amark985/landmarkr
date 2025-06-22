@@ -1,7 +1,24 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container my-5">
+<div class="container my-3">
+    <!-- Login/Signup Buttons (Visible only if not logged in) -->
+  {% if not session.get('user_id') %}
+    <div class="bg-light py-3 px-4 shadow-sm mb-4 w-100" style="z-index: 1;">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-center container">
+        <h5 class="mb-3 mb-md-0 text-center w-100">Login or Sign Up to Save Landmarks</h3>
+        <div class="d-flex gap-3 justify-content-center">
+          <a href="{{ url_for('login') }}" class="btn btn-primary">Log In</a>
+          <a href="{{ url_for('signup') }}" class="btn btn-secondary">Sign Up</a>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <!-- Logout button for logged-in users -->
+    <form method="POST" action="/logout" class="text-end mb-4">
+      <button type="submit" class="btn btn-danger btn-sm">Logout</button>
+    </form>
+  {% endif %}
 
   <!-- Filter Controls -->
   <form id="filterForm" onsubmit="handleFilterSubmit(event)" class="row g-3 align-items-center mb-4 p-3 bg-light rounded shadow-sm">
@@ -59,32 +76,6 @@
       </div>
     </div>
   </div>
-
-  <!-- Login/Signup Form (Visible only if not logged in) -->
-  {% if not session.get('user_id') %}
-    <div id="login-section" class="mt-5 p-4 bg-light rounded shadow-sm mx-auto" style="max-width: 400px;">
-      <h3 class="mb-3 text-center">Login or Sign Up to Save Landmarks</h3>
-
-      <form method="POST" action="/" class="mb-4">
-        <input type="email" name="email" placeholder="Email" required class="form-control mb-2" />
-        <input type="password" name="password" placeholder="Password" required class="form-control mb-3" />
-        <input type="hidden" name="action" value="login" />
-        <button type="submit" class="btn btn-primary w-100">Login</button>
-      </form>
-
-      <form method="POST" action="/">
-        <input type="email" name="email" placeholder="Email" required class="form-control mb-2" />
-        <input type="password" name="password" placeholder="Password" required class="form-control mb-3" />
-        <input type="hidden" name="action" value="signup" />
-        <button type="submit" class="btn btn-secondary w-100">Sign Up</button>
-      </form>
-    </div>
-  {% else %}
-    <!-- Logout button for logged-in users -->
-    <form method="POST" action="/logout" class="mt-4 text-center">
-      <button type="submit" class="btn btn-danger btn-sm">Logout</button>
-    </form>
-  {% endif %}
 </div>
 {% endblock %}
 
@@ -101,18 +92,18 @@
 
     function initMap() {
       map = new google.maps.Map(document.getElementById("map"), {
-        center: { lat: 39.5, lng: -98.35 }, // Center of the US
+        center: { lat: 39.5, lng: -98.35 },
         zoom: 4,
       });
 
       infoWindow = new google.maps.InfoWindow();
 
-      fetchLandmarks(); // Load all landmarks on first load
+      fetchLandmarks();
     }
 
     function handleFilterSubmit(event) {
-      event.preventDefault(); 
-      applyFilters();         
+      event.preventDefault();
+      applyFilters();
     }
 
     function fetchLandmarks(filters = {}) {
@@ -147,7 +138,6 @@
               }
             });
 
-            // Extend bounds for each marker's position
             bounds.extend(marker.getPosition());
 
             const typeClass = place.type === "Natural" ? "popup-natural" : "popup-manmade";
@@ -180,15 +170,13 @@
 
           allMarkers = newMarkers;
 
-          // Fit the map bounds to markers (zoom & center)
           if (data.length === 1) {
-            map.setZoom(7);  // Or a value that looks good for a single marker
+            map.setZoom(7);
             map.setCenter(bounds.getCenter());
           } else {
             map.fitBounds(bounds);
           }
 
-          //Add markers to clusterer
           clusterer = new markerClusterer.MarkerClusterer({
             map: map,
             markers: allMarkers,
@@ -228,7 +216,7 @@
       document.getElementById("nameFilter").value = '';
       document.getElementById("stateFilter").value = '';
       document.getElementById("typeFilter").value = '';
-      fetchLandmarks();  // Reset to show all landmarks
+      fetchLandmarks();
     }
 
     function saveLandmark(landmarkId, buttonElem) {
@@ -269,7 +257,6 @@
     async defer>
   </script>
 
-    <!-- Load MarkerClusterer -->
+  <!-- Load MarkerClusterer -->
   <script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
 {% endblock %}
-
