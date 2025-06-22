@@ -6,19 +6,19 @@
 
 - 🌍 Interactive map of U.S. landmarks (natural + manmade)
 - 📍 Landmark detail pages with:
-  - Description, image, and Wikipedia integration
+  - Description, image, and Wikipedia view
   - Current weather + 5-day forecast
-- ✅ User authentication and saved landmarks
-- 🪣 Add/remove landmarks from a "Bucket List"
+- 🔐 User authentication
+- 🪣 Save landmarks to a personal "Bucket List"
+- ✅ View and manage saved landmarks
 - 🔍 Filter landmarks by name, type, or state
 - 📄 Wikipedia article previews and direct links
-- 🗂️ User tabs (e.g., saved, bucket list)
 
 ## Tech Stack
 
 - **Backend**: Flask, SQLAlchemy, Jinja2
-- **Frontend**: HTML, CSS (custom + optionally Bootstrap), JavaScript
-- **Database**: PostgreSQL or SQLite (local dev)
+- **Frontend**: HTML, CSS (custom + Bootstrap), JavaScript
+- **Database**: PostgreSQL (prod) or SQLite (local dev)
 - **APIs Used**:
   - Wikipedia API (landmark info)
   - Google Maps API (map display)
@@ -39,7 +39,7 @@ env\Scripts\activate      # Windows
 ### 3. Install Dependencies
 pip install -r requirements.txt
 
-### 4. Set Up Enironment Variables
+### 4. Set Up Environment Variables
 **Create a .env file in the project root and include:
 FLASK_APP=app.py
 FLASK_ENV=development
@@ -56,17 +56,25 @@ flask db upgrade
 **Visit http://localhost:5000 in your browser.
 flask run
 
-## Project Structure
+### Project Structure
 landmarkr/
-├── static/                # CSS, JS, and image assets
+├── api/                   # Wikipedia and weather API integrations
+├── data/                  # CSV and seed data
+├── static/                # CSS, JS, images, and video
 ├── templates/             # HTML templates (Jinja2)
-├── models.py              # SQLAlchemy models
+├── .env                   # Environment config (ignored by Git)
+├── .gitignore             # Files to be ignored by Github
+├── config.py              # App configuration settings
 ├── crud.py                # Database helper functions
-├── server.py              # Flask app entry point (can replace app.py)
-├── seed_database.py       # Script to populate the database with landmarks
-├── wikipedia_api.py       # Wikipedia scraping/API helper for landmarks
+├── model.py               # SQLAlchemy models
+├── README.md              # Project overview and setup
 ├── requirements.txt       # Project dependencies
-├── .env                   # Environment variables (excluded from Git)
-└── README.md              # Project overview and setup
+├── seed_database.py       # Script to populate the database with landmarks
+├── server.py              # Flask app entry point (use instead of app.py)
+
+## Possible Future Updates
+-User-created folders/tags for organizing landmarks
+-Travel planning tools (e.g. driving routes, nearby places)
+-User-submitted landmarks and reviews
 
 
