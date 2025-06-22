@@ -6,7 +6,7 @@ import sys
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from env.config import GOOGLE_MAPS_API_KEY
+from config import GOOGLE_MAPS_API_KEY
 
 API_KEY = GOOGLE_MAPS_API_KEY
 INPUT_FILE = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data", "manmade_landmarks.csv"))

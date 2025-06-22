@@ -1,4 +1,10 @@
-env/
-venv/
-*.pyc
+# Python
 __pycache__/
+*.pyc
+
+# Virtual environments
+env/
+
+# Sensitive info
+.env
+

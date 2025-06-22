@@ -4,7 +4,7 @@ from api.wikipedia_api import fetch_wiki_data
 from api.weather_api import get_current_weather, get_forecast_weather
 import crud
 from werkzeug.security import check_password_hash, generate_password_hash
-from env.config import GOOGLE_MAPS_API_KEY, FLASK_SECRET_KEY
+from config import GOOGLE_MAPS_API_KEY, FLASK_SECRET_KEY
 
 
 app = Flask(__name__)
