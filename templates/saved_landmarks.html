@@ -5,6 +5,10 @@
   <div class="card p-4 shadow-lg rounded-4">
     <h2 class="text-center mb-4 fw-bold">My Saved Landmarks</h2>
 
+    <p id="visited-counter" class="text-center text-success fw-semibold">
+      ✅ You’ve visited {{ visited_count }} landmark{{ visited_count != 1 and 's' or '' }}!
+    </p>
+
     <!-- Tab Navigation -->
     <ul class="nav nav-tabs mb-4" id="landmarkTabs" role="tablist">
       <li class="nav-item" role="presentation">
@@ -178,6 +182,7 @@
             if (data.success) {
               showMessage(`Marked as ${data.visited ? "visited" : "not visited"}.`);
               checkRewards(data.visited_count);
+              updateVisitedCounter(data.visited_count);
             } else {
               alert("Failed to update visited status.");
               this.checked = !isChecked;
@@ -212,6 +217,14 @@
         setTimeout(() => rewardDiv.style.display = "none", 5000);
       }
     }
+
+    function updateVisitedCounter(count) {
+      const counter = document.querySelector("#visited-counter");
+      if (counter) {
+        counter.textContent = `✅ You’ve visited ${count} landmark${count !== 1 ? 's' : ''}!`;
+      }
+    }
+
   });
 </script>
 {% endblock %}

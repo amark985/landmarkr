@@ -154,8 +154,11 @@ def my_landmarks():
 
     for saved in saved_landmarks:
         saved.landmark.visited = saved.visited
-        
-    return render_template("saved_landmarks.html", bucket_list=bucket_list, regular_saves=regular_saves)
+    
+    # Add visited count
+    visited_count = sum(1 for entry in saved_landmarks if entry.visited)
+
+    return render_template("saved_landmarks.html", bucket_list=bucket_list, regular_saves=regular_saves, visited_count=visited_count)
 
 
 # Route to view landmark details.
@@ -170,12 +173,14 @@ def landmark_detail(landmark_id):
   
     user_id = session.get("user_id")
 
+    landmark_data = landmark.to_dict(user_id=user_id)
+
     # Fetch weather
     units = request.args.get("units", "imperial")
     weather_current = get_current_weather(landmark.latitude, landmark.longitude, units=units)
     weather_forecast = get_forecast_weather(landmark.latitude, landmark.longitude, units=units)
 
-    return render_template("landmark_detail.html", landmark=landmark, user_id=user_id, wikipedia_url=wikipedia_url, weather_current=weather_current, weather_forecast=weather_forecast)
+    return render_template("landmark_detail.html", landmark=landmark, landmark_data=landmark_data, user_id=user_id, wikipedia_url=wikipedia_url, weather_current=weather_current, weather_forecast=weather_forecast)
 
 
 # Route to unsave landmarks for logged-in users

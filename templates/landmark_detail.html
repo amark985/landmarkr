@@ -9,16 +9,14 @@
 
   <!-- Landmark Header -->
   <div class="text-center mb-5">
-    <h1
-      class="display-4 fw-bold
+    <h1 class="display-4 fw-bold
       {% if landmark.type == 'Natural' %}
         landmark-name-natural
       {% elif landmark.type == 'Manmade' %}
         landmark-name-manmade
       {% else %}
         text-primary
-      {% endif %}
-    ">
+      {% endif %}">
       {{ landmark.name }}
     </h1>
     <span class="badge bg-info text-dark me-2">{{ landmark.type }}</span>
@@ -67,6 +65,39 @@
     </div>
   </div>
 
+  {% if user_id %}
+    <div class="text-center mb-4">
+      <form id="save-form" method="POST">
+        <input type="hidden" name="landmark_id" value="{{ landmark.id }}">
+        <button type="submit" id="save-btn" class="btn btn-primary" {% if landmark_data.is_saved %}disabled{% endif %}>
+          {% if landmark_data.is_saved %}
+            ✔️ Already Saved
+          {% else %}
+            💾 Save to My Landmarks
+          {% endif %}
+        </button>
+      </form>
+
+      {% if landmark_data.on_bucket_list %}
+        <p class="text-info mt-3">🌟 On Bucket List</p>
+      {% endif %}
+
+      <div class="form-check mt-3">
+        <input class="form-check-input" type="checkbox" id="visited-checkbox" {% if landmark_data.visited %}checked{% endif %}>
+        <label class="form-check-label" for="visited-checkbox">
+          {% if landmark_data.visited %}
+            📍 Landmark Visited
+          {% else %}
+            Mark as Visited
+          {% endif %}
+        </label>
+      </div>
+  {% else %}
+    <div class="text-center mb-4">
+      <a href="{{ url_for('login') }}" class="btn btn-outline-primary">Log in to Save this Landmark</a>
+    </div>
+  {% endif %}
+
   <!-- Navigation Buttons -->
   <div class="text-center mt-4">
     <a href="/map" class="btn btn-outline-dark me-2">← Back to Map</a>
@@ -94,7 +125,6 @@
 
   function loadWeather() {
     const unit = document.getElementById("unitSelect").value;
-
     fetch(`/api/weather?lat={{ landmark.latitude }}&lng={{ landmark.longitude }}&units=${unit}`)
       .then(res => res.json())
       .then(data => {
@@ -114,7 +144,7 @@
               <div class="d-flex justify-content-between align-items-center">
                 <div>
                   <p class="mb-1"><strong>Temp:</strong> ${current.temperature ?? "N/A"}${tempUnit}</p>
-                  <p class="mb-0"><strong>Condition:</strong> ${current.description ? current.description.charAt(0).toUpperCase() + current.description.slice(1) : "Unknown"}</p>
+                  <p class="mb-0"><strong>Condition:</strong> ${current.description ?? "Unknown"}</p>
                 </div>
                 ${current.icon ? `<img src="https://openweathermap.org/img/wn/${current.icon}@2x.png" alt="Weather icon" width="80">` : ""}
               </div>
@@ -142,7 +172,7 @@
             `;
           }).join("");
 
-        const forecastWrapper = `
+        document.getElementById("weather-container").innerHTML = currentHtml + `
           <div class="card border-success shadow-sm">
             <div class="card-body">
               <h5 class="card-title text-success mb-3">5-Day Forecast</h5>
@@ -150,11 +180,8 @@
             </div>
           </div>
         `;
-
-        document.getElementById("weather-container").innerHTML = currentHtml + forecastWrapper;
       })
-      .catch(err => {
-        console.error(err);
+      .catch(() => {
         document.getElementById("weather-container").innerHTML = `<p class="text-danger">Weather data not available.</p>`;
       });
   }
@@ -163,6 +190,53 @@
     const unit = getUnitPreference();
     document.getElementById("unitSelect").value = unit;
     loadWeather();
-  });
+
+    const saveForm = document.getElementById("save-form");
+    const saveBtn = document.getElementById("save-btn");
+
+    if (saveForm && !saveBtn.disabled) {
+      saveForm.addEventListener("submit", async function (e) {
+        e.preventDefault();
+        const formData = new FormData(saveForm);
+        const response = await fetch("/save", {
+          method: "POST",
+          body: formData,
+        });
+        const result = await response.json();
+        if (result.success) {
+          saveBtn.disabled = true;
+          saveBtn.textContent = "✔️ Already Saved";
+        }
+      });
+    }
+
+    const visitedCheckbox = document.getElementById("visited-checkbox");
+    if (visitedCheckbox) {
+      visitedCheckbox.addEventListener("change", async function (e) {
+        e.preventDefault();
+        visitedCheckbox.disabled = true;
+
+        const res = await fetch(`/toggle-visited/{{ landmark.id }}`, {
+          method: "POST",
+          });
+
+          const data = await res.json();
+          if (data.success) {
+            const label = visitedCheckbox.nextElementSibling;
+
+            visitedCheckbox.checked = data.visited;
+
+            if (data.visited) {
+              label.textContent = "📍 Landmark Visited";
+              label.classList.add("text-success");
+            } else {
+              label.textContent = "Mark as Visited";
+              label.classList.remove("text-success"); 
+            }
+          } 
+          visitedCheckbox.disabled = false;
+    });
+  }  
+});
 </script>
 {% endblock %}
