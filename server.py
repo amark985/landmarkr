@@ -15,7 +15,15 @@ connect_to_db(app)
 # Welcome homepage with guest/login/signup options
 @app.route("/")
 def home():
-    return render_template("home.html")
+    featured_landmarks = crud.get_featured_landmarks()
+
+    custom_texts = {
+        "Statue of Liberty National Monument": "A symbol of freedom and democracy in New York City.",
+        "Grand Canyon National Park": "An awe-inspiring natural wonder in Arizona.",
+        "Martin Luther King Jr. National Historical Park": "A tribute to Martin Luther King Jr. located in Georgia."
+    }
+
+    return render_template("home.html", featured_landmarks=featured_landmarks, custom_texts=custom_texts)
 
 
 # Main landmark map

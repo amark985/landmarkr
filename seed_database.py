@@ -90,6 +90,22 @@ def seed():
             db.session.add_all(all_landmarks)
             db.session.commit()
             print(f"Seeded {len(all_landmarks)} landmarks successfully.")
+
+            featured_info = {
+                "Statue of Liberty National Monument": "Statue_of_Liberty_National_Monument.jpg",
+                "Grand Canyon National Park": "Grand_Canyon_National_Park.jpg",
+                "Martin Luther King Jr. National Historical Park": "Martin_Luther_King_Jr._National_Historical_Park.jpg"
+            }
+
+            for name, image_filename in featured_info.items():
+                landmark = Landmark.query.filter_by(name=name).first()
+                if landmark:
+                    landmark.featured = True
+                    landmark.featured_image_filename = image_filename
+
+            db.session.commit()
+            print("Featured landmarks updated.")
+
         except Exception as e:
             db.session.rollback()
             print(f"Error during seeding: {e}")

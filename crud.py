@@ -65,6 +65,9 @@ def get_landmarks_by_filters(filters):
 
     return query.all()
 
+def get_featured_landmarks():
+    return Landmark.query.filter_by(featured=True).all()
+
 
 """Saved Landmark CRUD Functions"""
 

@@ -29,6 +29,9 @@ class Landmark(db.Model):
     longitude = db.Column(db.Float, nullable=False)
     image_url = db.Column(db.String, nullable=True)
     category_id = db.Column(db.Integer, db.ForeignKey("landmark_categories.id"), nullable=False)
+    featured = db.Column(db.Boolean, default=False)
+    featured_image_filename = db.Column(db.String, nullable=True)
+
 
     category = relationship('LandmarkCategory', backref='landmarks')
     saved_by_users = relationship('SavedLandmark', backref='landmark', cascade='all, delete-orphan')

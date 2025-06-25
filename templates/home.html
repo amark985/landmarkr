@@ -31,33 +31,17 @@
   <h2 class="text-center mb-4">Featured Landmarks</h2>
   <div class="row g-4">
     <!-- Landmark Cards -->
-    <div class="col-md-4">
-      <div class="card h-100 shadow-sm">
-        <img src="{{ url_for('static', filename='images/statue_of_liberty.jpg') }}" class="card-img-top" alt="Statue of Liberty">
-        <div class="card-body">
-          <h5 class="card-title">Statue of Liberty</h5>
-          <p class="card-text">A symbol of freedom and democracy in New York City.</p>
-        </div>
+    {% for landmark in featured_landmarks %}
+      <div class="col-md-4">
+        <a href="{{ url_for('landmark_detail', landmark_id=landmark.id) }}" class="card h-100 shadow-sm text-decoration-none text-dark landmark-card">
+          <img src="{{ url_for('static', filename='images/' ~ landmark.featured_image_filename) }}" class="card-img-top" alt="{{ landmark.name }}">
+          <div class="card-body">
+          <h5 class="card-title">{{ landmark.name }}</h5>
+          <p class="card-text">{{ custom_texts[landmark.name] }}</p>
+          </div>
+        </a>
       </div>
-    </div>
-    <div class="col-md-4">
-      <div class="card h-100 shadow-sm">
-        <img src="{{ url_for('static', filename='images/grand_canyon.jpg') }}" class="card-img-top" alt="Grand Canyon">
-        <div class="card-body">
-          <h5 class="card-title">Grand Canyon</h5>
-          <p class="card-text">An awe-inspiring natural wonder in Arizona.</p>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="card h-100 shadow-sm">
-        <img src="{{ url_for('static', filename='images/lincoln_memorial.jpg') }}" class="card-img-top" alt="Lincoln Memorial">
-        <div class="card-body">
-          <h5 class="card-title">Lincoln Memorial</h5>
-          <p class="card-text">A tribute to President Lincoln located in Washington, D.C.</p>
-        </div>
-      </div>
-    </div>
+    {% endfor %}
   </div>
 </section>
 {% endblock %}
@@ -113,6 +97,21 @@
   .btn-outline-light:hover {
     background-color: #fff;
     color: #000;
+  }
+
+  /* Hoverable landmark cards */
+  .landmark-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+  }
+  .landmark-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+    text-decoration: none; /* removes underline on hover */
+  }
+  .landmark-card img {
+    border-bottom: 1px solid #ddd;
   }
 </style>
 {% endblock %}
