@@ -30,8 +30,8 @@
 ## Tech Stack
 
 - **Backend**: Flask, SQLAlchemy, Jinja2
-- **Frontend**: HTML, CSS (custom + Bootstrap), JavaScript
-- **Database**: PostgreSQL (prod) or SQLite (local dev)
+- **Frontend**: HTML, CSS (custom + Bootstrap), JavaScript with Fetch/AJAX
+- **Database**: PostgreSQL
 - **APIs Used**:
   - Wikipedia API (landmark info)
   - Google Maps API (map display)
@@ -91,4 +91,4 @@ landmarkr/
 -User-submitted landmarks and reviews
 -Random "Featured Landmarks" on homepage
 -Filter by landmark type (e.g bridge, river)
-
+-Add more photos to the landmark details pages
