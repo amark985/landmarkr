@@ -15,9 +15,16 @@
 - 📄 Wikipedia article previews and direct links
 
 ## Screenshots
+- Main Screen
 ![Screenshot of my application's main screen](static/images/main_screen.png)
+
+- Map Page
 ![Screenshot of my application's map page](static/images/map_page.png)
+
+- Example landmark detail page
 ![Screenshot of one of my application's landmark detail pages](static/images/landmark_info_page.png)
+
+- Saved Landmarks page
 ![Screenshot of my application's saved landmarks page](static/images/saved_landmarks_page.png)
 
 ## Tech Stack
