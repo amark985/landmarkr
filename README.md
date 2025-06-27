@@ -1,6 +1,6 @@
 # Landmarkr 🗺️
 
-**Landmarkr** is a web app that lets users explore, save, and manage a personalized list of natural and manmade landmarks across the United States. Users can interact with a dynamic map, view current and forecasted weather conditions, and organize landmarks into custom tabs such as a bucket list.
+**Landmarkr** is a web app that lets users explore, save, and manage a personalized list of national parks (natural) and national historical landmarks (manmade) across the United States. Users can interact with a dynamic map, view current and forecasted weather conditions, and organize landmarks into custom tabs such as a bucket list.
 
 ## 🌟 Features
 
@@ -13,6 +13,12 @@
 - ✅ View and manage saved landmarks
 - 🔍 Filter landmarks by name, type, or state
 - 📄 Wikipedia article previews and direct links
+
+## Screenshots
+![Screenshot of my application's main screen](static/images/main_screen.png)
+![Screenshot of my application's map page](static/images/map_page.png)
+![Screenshot of one of my application's landmark detail pages](static/images/landmark_info_page.png)
+![Screenshot of my application's saved landmarks page](static/images/saved_landmarks_page.png)
 
 ## Tech Stack
 
@@ -72,9 +78,10 @@ landmarkr/
 ├── seed_database.py       # Script to populate the database with landmarks
 ├── server.py              # Flask app entry point (use instead of app.py)
 
-## Possible Future Updates
+## Version 2.0
 -User-created folders/tags for organizing landmarks
 -Travel planning tools (e.g. driving routes, nearby places)
 -User-submitted landmarks and reviews
-
+-Random "Featured Landmarks" on homepage
+-Filter by landmark type (e.g bridge, river)
 
